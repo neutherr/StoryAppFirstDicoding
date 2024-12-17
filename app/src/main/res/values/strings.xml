@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Nganugram</string>
+    <string name="signup">Daftar</string>
+    <string name="login">Masuk</string>
+    <string name="message_welcome_page">Bagikan dan ekspresikan ceritamu di NganugramStoryApp, Tempatnya Berbagi Momen, Menginspirasi Melalui Visual! Abadikan setiap detik indah dalam foto, berinteraksi dengan mudah, dan temukan inspirasi dari dunia di sekitarmu.</string>
+    <string name="title_welcome_page">Selamat datang di Nganugram !</string>
+    <string name="title_signup_page">Lengkapi data dirimu di bawah ini ya</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="message_login_page">Masukkan dulu datamu ya</string>
+    <string name="title_login_page">Bebas berekspresi dan bercerita</string>
+    <string name="name">Nama</string>
+    <string name="message_main_page">Selamat Belajar di Nganugram.</string>
+    <string name="greeting">Halo %1$s,</string>
+    <string name="logout">Keluar</string>
+    <string name="signup_image">Signup illustration image</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="login_image">Login illustration image</string>
+    <string name="story_image">Story image</string>
+    <string name="detail_story">Detail Story</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="preview_image">preview</string>
+    <string name="desc">Caption\n</string>
+    <string name="choose_image">Upload Gambar</string>
+    <string name="upload_story">\nUpload\n</string>
+    <string name="camera">Kamera</string>
+    <string name="gallery">Galeri</string>
+    <string name="add_story">tambah_cerita</string>
+</resources>
