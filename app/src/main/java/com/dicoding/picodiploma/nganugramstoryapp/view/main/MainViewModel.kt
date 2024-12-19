@@ -20,17 +20,20 @@ class MainViewModel(
     private val _resultStories = MutableLiveData<List<ListStoryItem>>()
     val resultStories: LiveData<List<ListStoryItem>> = _resultStories
 
+    private val _resultMaps = MutableLiveData<List<ListStoryItem>>()
+    val resultMaps: LiveData<List<ListStoryItem>> = _resultMaps
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> = _errorMessage
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = _errorMessage
 
     fun getListStories() {
         viewModelScope.launch {
             val session = userRepository.getSession().firstOrNull()
             if (session?.isLogin == true && !session.token.isNullOrEmpty()) {
-                _isLoading.value = true
+                setLoading(true)
                 try {
                     storyRepository.getStories().fold(
                         onSuccess = { response ->
@@ -39,18 +42,32 @@ class MainViewModel(
                             }
                         },
                         onFailure = { exception ->
-                            _errorMessage.value = exception.message
+                            setError(exception.message)
                         }
                     )
                 } catch (e: Exception) {
-                    _errorMessage.value = e.message
+                    setError(e.message)
                 } finally {
-                    _isLoading.value = false
+                    setLoading(false)
                 }
             } else {
-                // Jika user belum login atau token tidak ada, kirim pesan error
-                _errorMessage.value = "User belum login. Silakan login terlebih dahulu."
+                setError("User belum login. Silakan login terlebih dahulu.")
                 Log.e("MainViewModel", "User belum login, tidak bisa mengambil data stories")
+            }
+        }
+    }
+
+    fun getStoriesWithLocation() {
+        viewModelScope.launch {
+            setLoading(true)
+            try {
+                val stories = storyRepository.getStoriesWithLocation()
+                _resultMaps.postValue(stories)
+            } catch (e: Exception) {
+                setError("Gagal memuat data lokasi: ${e.message}")
+                _resultMaps.postValue(emptyList())
+            } finally {
+                setLoading(false)
             }
         }
     }
@@ -63,5 +80,13 @@ class MainViewModel(
         viewModelScope.launch {
             userRepository.logout()
         }
+    }
+
+    private fun setLoading(state: Boolean) {
+        _isLoading.value = state
+    }
+
+    private fun setError(message: String?) {
+        _errorMessage.value = message
     }
 }

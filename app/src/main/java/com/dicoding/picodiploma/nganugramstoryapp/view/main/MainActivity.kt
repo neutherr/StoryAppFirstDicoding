@@ -15,6 +15,7 @@ import com.dicoding.picodiploma.nganugramstoryapp.databinding.ActivityMainBindin
 import com.dicoding.picodiploma.nganugramstoryapp.view.ViewModelFactory
 import com.dicoding.picodiploma.nganugramstoryapp.view.add.AddStoryActivity
 import com.dicoding.picodiploma.nganugramstoryapp.view.detail.DetailActivity
+import com.dicoding.picodiploma.nganugramstoryapp.view.location.LocationActivity
 import com.dicoding.picodiploma.nganugramstoryapp.view.welcome.WelcomeActivity
 
 class MainActivity : AppCompatActivity() {
@@ -60,7 +61,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupFab() {
-        // Navigasi ke AddStoryActivity saat FAB diklik
         binding.fabAddStory.setOnClickListener {
             val intent = Intent(this@MainActivity, AddStoryActivity::class.java)
             startActivity(intent)
@@ -93,12 +93,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
             } else {
-                // Panggil getListStories() hanya jika user sudah login
                 viewModel.getListStories()
             }
         }
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -109,6 +107,12 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_logout -> {
                 viewModel.logout()
+                true
+            }
+            R.id.action_maps -> {
+                // Tambahkan Intent untuk membuka halaman LocationActivity
+                val intent = Intent(this, LocationActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
