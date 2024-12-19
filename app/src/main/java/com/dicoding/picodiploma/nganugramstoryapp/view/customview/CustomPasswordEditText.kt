@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import com.dicoding.picodiploma.nganugramstoryapp.R
 import com.google.android.material.textfield.TextInputEditText
 
 class CustomPasswordEditText : TextInputEditText {
@@ -31,7 +32,8 @@ class CustomPasswordEditText : TextInputEditText {
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (s.toString().isNotEmpty() && s.toString().length < 8) {
-                    setError("Password tidak boleh kurang dari 8 karakter", null)
+                    // Ambil string dari resources
+                    setError(context.getString(R.string.password_error), null)
                 } else {
                     error = null
                 }

@@ -28,4 +28,6 @@
     <string name="camera">Kamera</string>
     <string name="gallery">Galeri</string>
     <string name="add_story">tambah_cerita</string>
+    <string name="password_error">Password tidak boleh kurang dari 8 karakter</string>
+    <string name="detail_photo_content_description">Foto detail dari cerita</string>
 </resources>
