@@ -10,5 +10,5 @@ data class ResponseDetailStory(
     val message: String? = null,
 
     @field:SerializedName("story")
-    val story: Story
+    val story: Story? = null
 )

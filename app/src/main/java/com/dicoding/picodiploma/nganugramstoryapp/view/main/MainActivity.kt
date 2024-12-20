@@ -4,12 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.picodiploma.nganugramstoryapp.R
+import com.dicoding.picodiploma.nganugramstoryapp.data.LoadingPagingAdapter
 import com.dicoding.picodiploma.nganugramstoryapp.data.response.ListStoryItem
 import com.dicoding.picodiploma.nganugramstoryapp.databinding.ActivityMainBinding
 import com.dicoding.picodiploma.nganugramstoryapp.view.ViewModelFactory
@@ -17,6 +17,7 @@ import com.dicoding.picodiploma.nganugramstoryapp.view.add.AddStoryActivity
 import com.dicoding.picodiploma.nganugramstoryapp.view.detail.DetailActivity
 import com.dicoding.picodiploma.nganugramstoryapp.view.location.LocationActivity
 import com.dicoding.picodiploma.nganugramstoryapp.view.welcome.WelcomeActivity
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val viewModel by viewModels<MainViewModel> {
@@ -33,8 +34,8 @@ class MainActivity : AppCompatActivity() {
         setupView()
         setupRecyclerView()
         setupFab()
+        observePagingStories()
         observeSession()
-        observeStories()
     }
 
     private fun setupView() {
@@ -55,8 +56,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.rvStory.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            setHasFixedSize(true)
-            adapter = this@MainActivity.adapter
+            adapter = this@MainActivity.adapter.withLoadStateFooter(
+                footer = LoadingPagingAdapter { this@MainActivity.adapter.retry() }
+            )
         }
     }
 
@@ -67,22 +69,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeStories() {
-        viewModel.getListStories()
-
-        viewModel.resultStories.observe(this) { stories ->
-            if (stories.isNotEmpty()) {
-                adapter.submitList(stories)
-            }
-        }
-
-        viewModel.isLoading.observe(this) { isLoading ->
-            showLoading(isLoading)
-        }
-
-        viewModel.errorMessage.observe(this) { error ->
-            error?.let {
-                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+    private fun observePagingStories() {
+        lifecycleScope.launch {
+            viewModel.pagingStories.observe(this@MainActivity) { pagingData ->
+                adapter.submitData(lifecycle, pagingData)
             }
         }
     }
@@ -90,12 +80,15 @@ class MainActivity : AppCompatActivity() {
     private fun observeSession() {
         viewModel.getSession().observe(this) { user ->
             if (!user.isLogin) {
-                startActivity(Intent(this, WelcomeActivity::class.java))
-                finish()
-            } else {
-                viewModel.getListStories()
+                navigateToWelcomeActivity()
             }
         }
+    }
+
+    private fun navigateToWelcomeActivity() {
+        val intent = Intent(this, WelcomeActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -107,20 +100,15 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_logout -> {
                 viewModel.logout()
+                navigateToWelcomeActivity()
                 true
             }
             R.id.action_maps -> {
-                // Tambahkan Intent untuk membuka halaman LocationActivity
                 val intent = Intent(this, LocationActivity::class.java)
                 startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.rvStory.visibility = if (isLoading) View.GONE else View.VISIBLE
     }
 }

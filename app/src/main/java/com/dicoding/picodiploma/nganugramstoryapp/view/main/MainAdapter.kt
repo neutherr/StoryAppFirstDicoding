@@ -2,14 +2,14 @@ package com.dicoding.picodiploma.nganugramstoryapp.view.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dicoding.picodiploma.nganugramstoryapp.data.response.ListStoryItem
 import com.dicoding.picodiploma.nganugramstoryapp.databinding.ItemStoryBinding
 
-class MainAdapter : ListAdapter<ListStoryItem, MainAdapter.ViewHolder>(DIFF_CALLBACK) {
+class MainAdapter : PagingDataAdapter<ListStoryItem, MainAdapter.ViewHolder>(DIFF_CALLBACK) {
     private var onItemClickCallback: OnItemClickCallback? = null
 
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
@@ -27,9 +27,11 @@ class MainAdapter : ListAdapter<ListStoryItem, MainAdapter.ViewHolder>(DIFF_CALL
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val story = getItem(position)
-        holder.bind(story)
-        holder.itemView.setOnClickListener {
-            onItemClickCallback?.onItemClicked(story)
+        if (story != null) {
+            holder.bind(story)
+            holder.itemView.setOnClickListener {
+                onItemClickCallback?.onItemClicked(story)
+            }
         }
     }
 

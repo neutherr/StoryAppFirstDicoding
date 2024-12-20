@@ -1,12 +1,15 @@
 package com.dicoding.picodiploma.nganugramstoryapp.view.location
 
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.dicoding.picodiploma.nganugramstoryapp.R
 import com.dicoding.picodiploma.nganugramstoryapp.data.response.ListStoryItem
@@ -81,6 +84,29 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
         setMapStyle()
         setupMapControls()
+        getMyLocation()
+
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                getMyLocation()
+            }
+        }
+
+    private fun getMyLocation() {
+        if (ContextCompat.checkSelfPermission(
+                this.applicationContext,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            mMap.isMyLocationEnabled = true
+        } else {
+            requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        }
     }
 
     private fun setMapStyle() {
@@ -105,10 +131,10 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun addMarkersToMap(listStories: List<ListStoryItem>) {
         listStories.forEach { story ->
-            Log.d("LocationActivity", "Adding marker: ${story.name} at ${story.latitude}, ${story.longitude}")
+            Log.d("LocationActivity", "Adding marker: ${story.name} at ${story.lat}, ${story.lon}")
             val latLng = LatLng(
-                story.latitude ?: 0.0,
-                story.longitude ?: 0.0
+                story.lat ?: 0.0,
+                story.lon ?: 0.0
             )
             val markerOptions = MarkerOptions()
                 .position(latLng)
@@ -122,14 +148,13 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun focusFirstLocation(listStories: List<ListStoryItem>) {
         val firstStory = listStories.first()
         val firstLatLng = LatLng(
-            firstStory.latitude ?: 0.0,
-            firstStory.longitude ?: 0.0
+            firstStory.lat ?: 0.0,
+            firstStory.lon ?: 0.0
         )
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstLatLng, 10f))
     }
 
     private fun resetMapCamera() {
-        // Posisi default jika tidak ada data
         val defaultLatLng = LatLng(-2.5489, 118.0149) // Indonesia (Posisi default)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLatLng, 4f))
     }
