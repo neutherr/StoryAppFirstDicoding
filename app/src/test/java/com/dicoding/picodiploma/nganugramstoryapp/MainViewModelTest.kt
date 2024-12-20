@@ -46,7 +46,6 @@ class MainViewModelTest {
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        mainViewModel = MainViewModel(userRepository, storyRepository)
     }
 
     // Positive Test
@@ -58,6 +57,8 @@ class MainViewModelTest {
         expectedStories.value = data
 
         Mockito.`when`(storyRepository.getListStoriesPaging()).thenReturn(expectedStories)
+
+        mainViewModel = MainViewModel(userRepository, storyRepository)
 
         val actualStories = mainViewModel.pagingStories.getOrAwaitValue()
 
@@ -82,6 +83,7 @@ class MainViewModelTest {
 
         Mockito.`when`(storyRepository.getListStoriesPaging()).thenReturn(expectedStories)
 
+        mainViewModel = MainViewModel(userRepository, storyRepository)
         val actualStories = mainViewModel.pagingStories.getOrAwaitValue()
 
         val differ = AsyncPagingDataDiffer(
